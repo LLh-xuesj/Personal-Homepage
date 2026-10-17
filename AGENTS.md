@@ -25,7 +25,7 @@
 | --- | --- |
 | `src/styles/paper.css` | 令牌、reset、`.sheet`、`.label`、`.rule`、`.skip`、入场动画、打印 |
 | `src/styles/fonts.css` | `pnpm fonts` 生成，不要手改 |
-| `src/scripts/daily.ts` | 期号（年内第几天）、星期、今日一字（48 字）、今日一言（`QUOTES`），`seed = y*372+m*31+d` |
+| `src/scripts/daily.ts` | 期号、星期、今日一字（44 字）、今日一言（按字的主题取 `QUOTES`），`seed = y*372+m*31+d` |
 | `src/data/site.ts` | 站名、导语、入口、作品、编者的话、版权页 |
 | `src/components/PageFrame.astro` | 版面框（fixed inset 11px）、四角套准十字、右侧进度槽 |
 | `src/components/GrainOverlay.astro` | 纸面颗粒，fixed、`pointer-events: none` |

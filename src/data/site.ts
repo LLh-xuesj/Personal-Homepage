@@ -83,6 +83,33 @@ export const site = {
    */
   projects: [
     {
+      id: 'star-atlas',
+      title: '识星',
+      summary: '纯本地的认星工具。88 星座、110 个梅西耶、三种测验，双击就能打开。',
+      year: '2026',
+      role: '独立开发',
+      url: '',
+      repo: 'https://github.com/LLh-xuesj/star-atlas',
+    },
+    {
+      id: 'zcode-pet',
+      title: '桌宠',
+      summary: '住在 ZCode 窗口里的像素宠物，顺带报 token、费用和余额。',
+      year: '2026',
+      role: '独立开发',
+      url: '',
+      repo: 'https://github.com/LLh-xuesj/zcode-pet',
+    },
+    {
+      id: 'typora-xuan',
+      title: '宣纸',
+      summary: '给 Typora 写长文用的主题：宣纸底、墨字、朱砂点缀。',
+      year: '2026',
+      role: '设计 / CSS',
+      url: '',
+      repo: 'https://github.com/LLh-xuesj/typora-theme-xuan',
+    },
+    {
       id: 'this-page',
       title: '这一页',
       summary: '这个站本身。一个静态页面，样式手写，连字体两百来 KB。',

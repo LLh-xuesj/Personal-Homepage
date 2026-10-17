@@ -43,11 +43,8 @@ const GARAMOND_LATIN_RANGE =
   'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,' +
   'U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
 
-/** 以后改文案可能顺手用到的字符，先给上，省得每次加个标点都要重跑 */
-const SAFETY =
-  '0123456789，。、；：？！“”‘’（）《》〈〉【】—…·「」『』～°% .,:;!?()[]{}<>\'"-_/@#%&*+=|~^`$\\' +
-  // 运行时才拼进页面的字（天气/月相/彩蛋提示），量不到要手动兜住
-  '晴少云阴雾毛毛雨大小阵雪雷暴月相盈凸亏娥眉弦残新满日落星辰银河北斗天鹅天琴座抓住萤火许愿流星成雨没有找到这座城换个写法试试恢复自动定位天空换成了解这里还空着等想清楚从哪一句开始再写上来把散在各处的东西收成一扇门把日子写在纸上我在多数人眼中是什样的无名之辈古怪令人不适但让人们知道这个有一颗心通过颗星表达另梦见画然后下只要还握着笔就不算输迟到花也开过颜色里最亮发那颗';
+/** 标点、数字与少量兜底符号。页面上的汉字从 dist 与 daily.ts 里量，不在这里手写 */
+const SAFETY = '0123456789，。、；：？！“”‘’（）《》〈〉【】—…·「」『』～°% .,:;!?()[]{}<>\'"-_/@#%&*+=|~^`$\\';
 
 const refresh = process.argv.includes('--refresh');
 const log = (msg) => process.stdout.write(`${msg}\n`);
@@ -73,9 +70,14 @@ async function pageText() {
   const distHtml = path.join(ROOT, 'dist', 'index.html');
   if (!existsSync(distHtml)) throw new Error('没有 dist/index.html，先 pnpm build');
   const html = await readFile(distHtml, 'utf8');
-  return html
-    .replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, ' ')
-    .replace(/<[^>]*>/g, ' ');
+  // 首屏只印当天的字和句子，其余的只在运行时出现，
+  // 所以把 daily.ts 里会拼进页面的文本也量进来（注释先剥掉）。
+  const runtime = await readFile(path.join(ROOT, 'src', 'scripts', 'daily.ts'), 'utf8');
+  return (
+    html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]*>/g, ' ') +
+    ' ' +
+    runtime.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ')
+  );
 }
 
 /* ------------------------------------------------------------------ unicode-range */
