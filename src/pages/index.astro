@@ -34,7 +34,10 @@ const info = dailyInfo();
       </div>
 
       <div class="cover__foot" data-rise style="--i:2">
-        <p class="cover__lede">{site.lede}</p>
+        <p class="cover__lede">
+          <span data-quote>{info.quote.text}</span>
+          <span class="cover__quote-by" data-quote-by>{info.quote.by}</span>
+        </p>
         <p class="label cover__cue">目录在下</p>
       </div>
     </header>
@@ -135,6 +138,8 @@ const info = dailyInfo();
     write('[data-date]', info.iso);
     write('[data-seal-date]', info.iso);
     write('[data-glyph]', info.glyph);
+    write('[data-quote]', info.quote.text);
+    write('[data-quote-by]', info.quote.by);
 
     const time = document.querySelector<HTMLTimeElement>('time[data-date]');
     if (time) time.dateTime = info.date;
@@ -217,9 +222,19 @@ const info = dailyInfo();
   }
 
   .cover__lede {
-    max-width: 26em;
+    max-width: 28em;
     font-size: clamp(1.02rem, 1.5vw, 1.3rem);
     line-height: 1.8;
+  }
+
+  /* 出处小一号，跟句子同一条基线 */
+  .cover__quote-by {
+    margin-left: 0.6em;
+    font-family: var(--font-serif);
+    font-size: 0.76em;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    white-space: nowrap;
   }
 
   .cover__cue {

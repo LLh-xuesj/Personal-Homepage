@@ -25,7 +25,7 @@
 | --- | --- |
 | `src/styles/paper.css` | 令牌、reset、`.sheet`、`.label`、`.rule`、`.skip`、入场动画、打印 |
 | `src/styles/fonts.css` | `pnpm fonts` 生成，不要手改 |
-| `src/scripts/daily.ts` | 期号（年内第几天）、星期、今日一字（48 字，`seed = y*372+m*31+d`） |
+| `src/scripts/daily.ts` | 期号（年内第几天）、星期、今日一字（48 字）、今日一言（`QUOTES`），`seed = y*372+m*31+d` |
 | `src/data/site.ts` | 站名、导语、入口、作品、编者的话、版权页 |
 | `src/components/PageFrame.astro` | 版面框（fixed inset 11px）、四角套准十字、右侧进度槽 |
 | `src/components/GrainOverlay.astro` | 纸面颗粒，fixed、`pointer-events: none` |
@@ -38,7 +38,7 @@
 几条不变量：
 
 - **浅色与深色是同一套令牌对调**，不要在组件里写 `@media (prefers-color-scheme)` 分叉（`paper.css` 里已经统一处理）。
-- 页面上「今日一字」与期号由构建期 `dailyInfo()` 先填、客户端再按访客本地日期改写；两条路径共用 `daily.ts`，不要各写一份。
+- 页面上「今日一字」「今日一言」与期号由构建期 `dailyInfo()` 先填、客户端再按访客本地日期改写；两条路径共用 `daily.ts`，不要各写一份。
 - 目录行是**整行 `<a>`**，序号在 `IndexRow.astro` 里自动生成；`entries` 顺序就是页面顺序。
 - **入口与作品是两种手势**：入口整行压满墨色（导航），作品只让标题/序号/导点变朱红（内容）。不要合并成同一个组件，也不要给作品加大缩略图。
 - 序号全局连续：作品从 `entries.length + 1` 起（现为 04），加作品不用改号。首页最多五件；`projects.length < 4` 时才印「待印」版位。
@@ -67,7 +67,7 @@
 - 用具体名词和能核对的数字（`两百来 KB`、`第 288 期`、`48 个字`），不用"丰富""多元""优质"。
 - 允许口语、半句、自嘲（`GitHub 看心情`）。个人站用"我"，或者干脆省主语，别用"我们"。
 - 三条副标题别用同一个句式，长度也要错开。
-- `lede`、`note`、`colophon` 里的文案只在 `src/data/site.ts` 改；改完念一遍，像播音稿就重写。
+- `note`、`colophon` 里的文案只在 `src/data/site.ts` 改；今日一言在 `daily.ts` 的 `QUOTES`（收公有领域的旧句子）；改完念一遍，像播音稿就重写。
 
 
 

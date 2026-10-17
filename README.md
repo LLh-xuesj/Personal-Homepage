@@ -34,7 +34,6 @@ export const site = {
   title: 'xuesj',
   kicker: '个人主页',
   description: '...', // 只进 <meta description> 与分享卡片，页面上不显示
-  lede: '三个链接，别的没什么。',
   entries: [{ id, label, note, href, external }],
   projects: [{ id, title, summary, year, role, url, repo }],
   note: { label, lead, paragraphs, signature },
@@ -52,13 +51,14 @@ export const site = {
 
 作品的序号接着入口往下排（三个入口之后从 `04` 开始），加一件就多一行，不用改编号。`summary` 是一句话，超过 40 字就该拆成两件事；`url` 是网页、`repo` 是代码仓库，两栏都留空的话标题就不可点，只作为一条记录。`role` 写你干的部分，年份按倒序排。首页满四件时会自动收掉「待印」版位；超过五件就另开一页，别硬塞。
 
-## 日期与今日一字
+## 日期、一字与一言
 
 `src/scripts/daily.ts`：
 
 - `doy` = 年内第几天，刊头写成「第 290 期」。
 - `weekday` = 星期几，`iso` = `YYYY.MM.DD`。
 - `glyph` = 从 48 个汉字里按 `seed = y*372 + m*31 + d` 取一个，同一天固定；以访客本地日期为准。
+- `quote` = 从 `QUOTES` 里按同一个种子取一句旧诗，刊头下面那句就是它；想换句子改这个数组，收公有领域的句子，别收网上的段子。
 - 构建时先按构建日期渲染一份，客户端脚本加载后再按访客时区改写，所以静态 HTML 也不是空的。
 
 ## 设计系统

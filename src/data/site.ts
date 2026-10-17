@@ -52,9 +52,6 @@ export const site = {
   /** 只进 <title> 与社交卡片 */
   description: 'xuesj 的个人主页：博客、Bilibili、GitHub。',
 
-  /** 刊头下方的一句导语 */
-  lede: '三个链接，别的没什么。',
-
   /** 三个入口，按显示顺序排列 */
   entries: [
     {
