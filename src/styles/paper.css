@@ -1,0 +1,226 @@
+/**
+ * 纸本（risograph）设计系统的全部令牌与基础样式。
+ *
+ * 两个油墨：墨黑与朱红，印在米色纸上。没有阴影、没有圆角、
+ * 没有第三种强调色。分栏与分隔只用 1px 的墨线，线是版面的一部分，
+ * 不是边框。深色模式就是把纸与墨对调，朱红略提亮。
+ */
+
+:root {
+  --paper: #efe7d6;
+  --paper-deep: #e4d8c0;
+  --ink: #181510;
+  --ink-soft: #4f4739;
+  --ink-faint: #6b6254;
+  --rule: rgba(24, 21, 16, 0.22);
+  --red: #c33f28;
+  --red-soft: rgba(195, 63, 40, 0.13);
+
+  --font-serif: 'EB Garamond', 'LXGW WenKai', 'KaiTi', serif;
+  --font-cjk: 'LXGW WenKai', 'EB Garamond', 'KaiTi', serif;
+
+  --pad: clamp(1.35rem, 5vw, 4.5rem);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15130f;
+    --paper-deep: #201c16;
+    --ink: #ece4d2;
+    --ink-soft: #aaa189;
+    --ink-faint: rgba(236, 228, 210, 0.58);
+    --rule: rgba(236, 228, 210, 0.2);
+    --red: #e2653f;
+    --red-soft: rgba(226, 101, 63, 0.16);
+
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--ink-faint) transparent;
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-cjk);
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+figcaption,
+dl,
+dd,
+ol,
+ul {
+  margin: 0;
+}
+
+ol,
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+svg {
+  display: block;
+}
+
+::selection {
+  background: var(--red);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+}
+
+/* 版面：一张纸，左右留白随视口走 */
+.sheet {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(1.8rem, 4.4vw, 3rem) var(--pad) clamp(2.2rem, 4vw, 3.2rem);
+}
+
+/* 矮屏（常见的 1280×720 笔记本）把上边距收一点，让三行目录落在首屏内 */
+@media (max-height: 800px) and (min-width: 721px) {
+  .sheet {
+    padding-top: 2rem;
+  }
+}
+
+/* 组目标题上方的那排小字 */
+.label {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 0.68rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.label--red {
+  color: var(--red);
+}
+
+.rule {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: var(--rule);
+}
+
+.rule--red {
+  background: var(--red);
+  opacity: 0.55;
+}
+
+.skip {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 60;
+  padding: 0.45rem 0.8rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-cjk);
+  font-size: 0.9rem;
+  transform: translateY(-160%);
+  transition: transform 180ms var(--ease);
+}
+
+.skip:focus-visible {
+  transform: none;
+  outline-color: var(--paper);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-rise] {
+  animation: rise 720ms var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .frame,
+  .grain,
+  .skip {
+    display: none !important;
+  }
+
+  .sheet {
+    max-width: none;
+    padding: 0;
+  }
+
+  [data-rise] {
+    animation: none !important;
+  }
+
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-family: var(--font-serif);
+    font-size: 0.75em;
+    color: #444;
+  }
+}

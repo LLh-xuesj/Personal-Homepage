@@ -1,0 +1,56 @@
+---
+/**
+ * 页面外壳：题头信息、跳过链接、版面框、纸面颗粒。
+ *
+ * 全站没有运行时框架，样式在构建时内联进 HTML。
+ */
+import { site } from '../data/site';
+import GrainOverlay from '../components/GrainOverlay.astro';
+import PageFrame from '../components/PageFrame.astro';
+import '../styles/paper.css';
+import '../styles/fonts.css';
+
+const title = `${site.title} · ${site.kicker}`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={site.description} />
+    <link rel="canonical" href={site.url} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={site.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={site.description} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary" />
+
+    <meta name="theme-color" content="#efe7d6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#15130f" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preload" href="/fonts/lxgw-wenkai-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href="/fonts/ebgaramond-latin-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">跳到正文</a>
+    <PageFrame />
+    <slot />
+    <GrainOverlay />
+  </body>
+</html>

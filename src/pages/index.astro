@@ -1,0 +1,491 @@
+---
+/**
+ * 一张纸：刊头 / 目录 / 编者的话 / 版权页。
+ *
+ * 期号与「今日一字」在构建时先填一份，客户端脚本按访客本地日期改写。
+ * 阅读进度用 rAF 读 scrollY，只写 transform，不监听 scroll 事件。
+ */
+import Base from '../layout/Base.astro';
+import IndexRow from '../components/IndexRow.astro';
+import WorkRow from '../components/WorkRow.astro';
+import Seal from '../components/Seal.astro';
+import { site } from '../data/site';
+import { dailyInfo } from '../scripts/daily';
+
+const info = dailyInfo();
+---
+
+<Base>
+  <main class="sheet" id="main">
+    <header class="cover">
+      <div class="cover__meta">
+        <span class="label">{site.kicker}</span>
+        <span class="label cover__issue">
+          第 <span data-doy>{info.doy}</span> 期 · <time datetime={info.date} data-date>{info.iso}</time>
+          · 星期<span data-weekday>{info.weekday}</span>
+        </span>
+      </div>
+
+      <div class="cover__main">
+        <h1 class="wordmark" data-rise style="--i:0">
+          xuesj<span class="wordmark__dot" aria-hidden="true">.</span>
+        </h1>
+        <Seal index={1} />
+      </div>
+
+      <div class="cover__foot" data-rise style="--i:2">
+        <p class="cover__lede">{site.lede}</p>
+        <p class="label cover__cue">目录在下</p>
+      </div>
+    </header>
+
+    <section class="index" aria-labelledby="index-title">
+      <div class="section-head">
+        <h2 class="label" id="index-title">
+          入口 <span class="section-head__latin">Index</span>
+        </h2>
+        <span class="label">{String(site.entries.length).padStart(2, '0')}</span>
+      </div>
+
+      <ol class="index__list">
+        {site.entries.map((entry, i) => <IndexRow entry={entry} n={i + 1} />)}
+      </ol>
+    </section>
+
+    <section class="works" aria-labelledby="works-title">
+      <div class="section-head">
+        <h2 class="label label--red" id="works-title">
+          作品 <span class="section-head__latin">Work</span>
+        </h2>
+        <span class="label">{String(site.projects.length).padStart(2, '0')}</span>
+      </div>
+
+      <ol class="works__list">
+        {site.projects.map((project, i) => <WorkRow project={project} n={site.entries.length + i + 1} />)}
+        {
+          site.projects.length < 4 && (
+            <li class="slot">
+              <span class="slot__no" aria-hidden="true">
+                {String(site.entries.length + site.projects.length + 1).padStart(2, '0')}
+              </span>
+              <span class="slot__plate">
+                <span class="slot__inner">
+                  <span class="slot__label">待印</span>
+                  <span class="slot__hint">下一件还在做</span>
+                </span>
+              </span>
+            </li>
+          )
+        }
+      </ol>
+    </section>
+
+    <hr class="rule rule--red" />
+
+    <section class="note" aria-labelledby="note-title">
+      <div class="note__side">
+        <h2 class="label" id="note-title">
+          编者的话 <span class="section-head__latin">Note</span>
+        </h2>
+        <span class="note__mark" aria-hidden="true"></span>
+      </div>
+
+      <div class="note__body">
+        <p class="note__lead">{site.note.lead}</p>
+        {site.note.paragraphs.map((p) => <p class="note__para">{p}</p>)}
+        <p class="note__sign">
+          {site.note.signature}
+          <span class="note__year">· {site.colophon.year}</span>
+        </p>
+      </div>
+    </section>
+
+    <footer class="colophon">
+      <div class="colophon__grid">
+        {
+          site.colophon.items.map((item) => (
+            <div class="colophon__item">
+              <span class="label">{item.label}</span>
+              <p>{item.value}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="colophon__base">
+        <span class="label">© {site.colophon.year} {site.title}</span>
+        <a class="colophon__top" href="#main">回到顶部 <span aria-hidden="true">↑</span></a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    import { dailyInfo } from '../scripts/daily';
+
+    const info = dailyInfo();
+
+    const write = (selector: string, text: string) => {
+      document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+        el.textContent = text;
+      });
+    };
+
+    write('[data-doy]', String(info.doy));
+    write('[data-weekday]', info.weekday);
+    write('[data-date]', info.iso);
+    write('[data-seal-date]', info.iso);
+    write('[data-glyph]', info.glyph);
+
+    const time = document.querySelector<HTMLTimeElement>('time[data-date]');
+    if (time) time.dateTime = info.date;
+
+    // 阅读进度：每帧读一次滚动位置，写 scaleY。没有 scroll 监听。
+    const fill = document.querySelector<HTMLElement>('[data-progress]');
+
+    if (fill) {
+      let target = 0;
+      let value = 0;
+
+      const read = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        target = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      };
+
+      const tick = () => {
+        read();
+        value += (target - value) * 0.14;
+        if (Math.abs(target - value) < 0.0015) value = target;
+        fill.style.transform = `scaleY(${value.toFixed(4)})`;
+        requestAnimationFrame(tick);
+      };
+
+      read();
+      value = target;
+      fill.style.transform = `scaleY(${value.toFixed(4)})`;
+      requestAnimationFrame(tick);
+      window.addEventListener('resize', read, { passive: true });
+    }
+  </script>
+</Base>
+
+<style>
+  .cover {
+    display: grid;
+    gap: clamp(1.5rem, 3.4vw, 2.6rem);
+  }
+
+  .cover__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .cover__issue {
+    text-align: right;
+  }
+
+  .cover__main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .wordmark {
+    font-family: var(--font-serif);
+    font-size: clamp(4.4rem, 15vw, 12rem);
+    font-weight: 400;
+    line-height: 0.76;
+    letter-spacing: -0.055em;
+    margin-left: -0.055em;
+  }
+
+  .wordmark__dot {
+    color: var(--red);
+  }
+
+  .cover__foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .cover__lede {
+    max-width: 26em;
+    font-size: clamp(1.02rem, 1.5vw, 1.3rem);
+    line-height: 1.8;
+  }
+
+  .cover__cue {
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  .index {
+    margin-top: clamp(2.6rem, 6vw, 4.5rem);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .section-head__latin {
+    margin-left: 0.55em;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+  }
+
+  .index__list > :last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .works {
+    margin-top: clamp(2.4rem, 5.5vw, 4rem);
+  }
+
+  .works__list > :last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* 还没印的版位：底下是浅斜线，像留出的一格 */
+  .slot {
+    display: grid;
+    grid-template-columns: 3.4rem minmax(0, 1fr);
+    column-gap: clamp(0.9rem, 2.4vw, 2.2rem);
+    padding-top: clamp(1.05rem, 2.2vw, 1.5rem);
+  }
+
+  .slot__no {
+    padding-top: 0.55rem;
+    font-family: var(--font-serif);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .slot__plate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: clamp(3.4rem, 5.4vw, 4.4rem);
+    border-top: 1px solid var(--rule);
+    background-image: repeating-linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ink) 6%, transparent) 0 1px,
+      transparent 1px 10px
+    );
+  }
+
+  .slot__inner {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    padding: 0.15rem 0.9rem;
+    background: var(--paper);
+  }
+
+  .slot__label {
+    font-family: var(--font-serif);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: var(--red);
+  }
+
+  .slot__hint {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+  }
+
+  .note {
+    display: grid;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+    gap: clamp(1.6rem, 5vw, 4.5rem);
+    margin-top: clamp(2.8rem, 6.5vw, 5rem);
+    padding-top: clamp(1.2rem, 2.5vw, 2rem);
+  }
+
+  .note__side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    align-items: flex-start;
+  }
+
+  /* 套准十字：和版面四角同一套记号，放大了当注释符号 */
+  .note__mark {
+    position: relative;
+    width: 26px;
+    height: 26px;
+  }
+
+  .note__mark::before,
+  .note__mark::after {
+    content: '';
+    position: absolute;
+    background: var(--red);
+  }
+
+  .note__mark::before {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+
+  .note__mark::after {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .note__body {
+    display: grid;
+    gap: 1.05rem;
+  }
+
+  .note__lead {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 2.6vw, 2.05rem);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+
+  .note__para {
+    max-width: 32em;
+    color: var(--ink-soft);
+  }
+
+  .note__sign {
+    margin-top: 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    text-align: right;
+  }
+
+  .note__year {
+    color: var(--ink-faint);
+  }
+
+  .colophon {
+    margin-top: clamp(3rem, 7vw, 5.5rem);
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .colophon__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.4rem;
+  }
+
+  .colophon__item .label {
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .colophon__item p {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+
+  .colophon__base {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(1.6rem, 3vw, 2.4rem);
+  }
+
+  .colophon__top {
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    transition:
+      color 200ms var(--ease),
+      border-color 200ms var(--ease);
+  }
+
+  .colophon__top:hover {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  @media (max-height: 800px) and (min-width: 721px) {
+    .cover {
+      gap: 1.5rem;
+    }
+
+    .index {
+      margin-top: 2.4rem;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .cover__meta {
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .cover__issue {
+      text-align: left;
+    }
+
+    .cover__foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .note {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.4rem;
+    }
+    .note__side {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slot {
+      grid-template-columns: 2.4rem minmax(0, 1fr);
+      column-gap: 0.7rem;
+    }
+
+    .slot__no {
+      padding-top: 0.3rem;
+    }
+
+    .slot__plate {
+      min-height: 3.6rem;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .colophon__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .colophon__base {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+  }
+</style>

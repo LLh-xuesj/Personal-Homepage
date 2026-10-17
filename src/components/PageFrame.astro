@@ -1,0 +1,101 @@
+---
+/**
+ * 固定的版面框：一圈细墨线、四角套准十字、右侧一条阅读进度。
+ * 全部是装饰，pointer-events: none，不挡任何链接。
+ */
+---
+
+<div class="frame" aria-hidden="true">
+  <span class="frame__c frame__c--tl"></span>
+  <span class="frame__c frame__c--tr"></span>
+  <span class="frame__c frame__c--bl"></span>
+  <span class="frame__c frame__c--br"></span>
+  <div class="frame__bar">
+    <span class="frame__fill" data-progress></span>
+  </div>
+</div>
+
+<style>
+  .frame {
+    position: fixed;
+    inset: 11px;
+    z-index: 40;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+  }
+
+  .frame__c {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+  }
+
+  .frame__c::before,
+  .frame__c::after {
+    content: '';
+    position: absolute;
+    background: var(--red);
+  }
+
+  .frame__c::before {
+    top: 5px;
+    left: 0;
+    width: 11px;
+    height: 1px;
+  }
+
+  .frame__c::after {
+    top: 0;
+    left: 5px;
+    width: 1px;
+    height: 11px;
+  }
+
+  .frame__c--tl {
+    top: -6px;
+    left: -6px;
+  }
+
+  .frame__c--tr {
+    top: -6px;
+    right: -6px;
+  }
+
+  .frame__c--bl {
+    bottom: -6px;
+    left: -6px;
+  }
+
+  .frame__c--br {
+    right: -6px;
+    bottom: -6px;
+  }
+
+  .frame__bar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 3px;
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+  }
+
+  .frame__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--red);
+    transform: scaleY(0);
+    transform-origin: top center;
+    will-change: transform;
+  }
+
+  @media (max-width: 640px) {
+    .frame {
+      inset: 7px;
+    }
+
+    .frame__bar {
+      width: 2px;
+    }
+  }
+</style>

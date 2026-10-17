@@ -1,0 +1,217 @@
+---
+/**
+ * 作品栏的一行，排法像书的目录：编号、标题、导点、角色年份。
+ *
+ * 和「入口」一行的区别是有意的：入口按下会整行压满墨色（那是导航），
+ * 作品只让描线与标题变朱红——作品是内容，不该用导航的手势。
+ */
+import type { Project } from '../data/site';
+
+interface Props {
+  project: Project;
+  /** 全局序号，接着入口往下排，会补成 04 */
+  n: number;
+}
+
+const { project, n } = Astro.props;
+const link = project.href !== '';
+const Tag = link ? 'a' : 'div';
+---
+
+<li class="work">
+  <Tag
+    class="work__link"
+    {...link ? { href: project.href } : {}}
+    rel={link && project.external ? 'noopener' : undefined}
+    target={link && project.external ? '_blank' : undefined}
+  >
+    <span class="work__no">{String(n).padStart(2, '0')}</span>
+
+    <span class="work__main">
+      <span class="work__line">
+        <span class="work__title">{project.title}</span>
+        <span class="work__leader" aria-hidden="true"></span>
+      </span>
+      <span class="work__summary">{project.summary}</span>
+    </span>
+
+    <span class="work__meta">
+      <span class="work__role">{project.role}</span>
+      <span class="work__year">{project.year}</span>
+    </span>
+
+    {
+      link ? (
+        <span class="work__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+            <path d="M5.5 18.5 18.5 5.5M9 5.5h9.5V15" fill="none" stroke="currentColor" stroke-width="1.3" />
+          </svg>
+        </span>
+      ) : (
+        <span class="work__arrow work__arrow--none" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+            <path d="M12 6v12" fill="none" stroke="currentColor" stroke-width="1.1" />
+          </svg>
+        </span>
+      )
+    }
+  </Tag>
+</li>
+
+<style>
+  .work {
+    border-top: 1px solid var(--rule);
+  }
+
+  .work__link {
+    display: grid;
+    grid-template-columns: 3.4rem minmax(0, 1fr) auto 2.2rem;
+    grid-template-areas: 'no main meta arrow';
+    align-items: start;
+    column-gap: clamp(0.9rem, 2.4vw, 2.2rem);
+    padding: clamp(1.05rem, 2.2vw, 1.5rem) 0;
+  }
+
+  .work__no {
+    grid-area: no;
+    padding-top: 0.55rem;
+    font-family: var(--font-serif);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    transition: color 220ms var(--ease);
+  }
+
+  .work__main {
+    grid-area: main;
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  /* 标题与导点同一条基线，导点吃掉中间的空白 */
+  .work__line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .work__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 2.4vw, 1.95rem);
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    transition: color 220ms var(--ease);
+  }
+
+  .work__leader {
+    flex: 1 1 auto;
+    min-width: 1.5rem;
+    height: 4px;
+    transform: translateY(-0.2em);
+    background-image: radial-gradient(circle at 1px 2px, var(--rule) 1px, transparent 1.3px);
+    background-size: 7px 4px;
+    background-repeat: repeat-x;
+    transition: opacity 220ms var(--ease);
+  }
+
+  .work__summary {
+    max-width: 34em;
+    font-size: 0.86rem;
+    line-height: 1.75;
+    color: var(--ink-soft);
+  }
+
+  .work__meta {
+    grid-area: meta;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0.9rem;
+    padding-top: 0.6rem;
+    white-space: nowrap;
+    font-family: var(--font-serif);
+    font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .work__role {
+    text-transform: none;
+  }
+
+  .work__arrow {
+    grid-area: arrow;
+    justify-self: end;
+    padding-top: 0.4rem;
+    color: var(--ink-faint);
+    transition:
+      transform 300ms var(--ease),
+      color 220ms var(--ease);
+  }
+
+  .work__arrow--none {
+    opacity: 0.45;
+  }
+
+  /* 只有链接行才有手势反馈 */
+  a.work__link:hover .work__title,
+  a.work__link:focus-visible .work__title {
+    color: var(--red);
+  }
+
+  a.work__link:hover .work__no,
+  a.work__link:focus-visible .work__no {
+    color: var(--red);
+  }
+
+  a.work__link:hover .work__leader {
+    opacity: 0.55;
+  }
+
+  a.work__link:hover .work__arrow,
+  a.work__link:focus-visible .work__arrow {
+    transform: translate(3px, -3px);
+    color: var(--red);
+  }
+
+  @media (max-width: 720px) {
+    .work__link {
+      grid-template-columns: 2.4rem minmax(0, 1fr) 1.5rem;
+      grid-template-areas:
+        'no main arrow'
+        'no meta arrow';
+      column-gap: 0.7rem;
+      row-gap: 0.15rem;
+      padding: 1.05rem 0;
+    }
+
+    .work__no {
+      padding-top: 0.3rem;
+    }
+
+    .work__line {
+      gap: 0;
+    }
+
+    .work__leader {
+      display: none;
+    }
+
+    .work__title {
+      font-size: 1.4rem;
+    }
+
+    .work__meta {
+      grid-area: meta;
+      justify-content: flex-start;
+      padding-top: 0;
+    }
+
+    .work__arrow {
+      padding-top: 0.25rem;
+    }
+  }
+</style>
