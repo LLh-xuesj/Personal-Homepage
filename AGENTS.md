@@ -31,7 +31,7 @@
 | `src/components/GrainOverlay.astro` | 纸面颗粒，fixed、`pointer-events: none` |
 | `src/components/Seal.astro` | 今日一字印章 |
 | `src/components/IndexRow.astro` | 整行目录项；悬停墨色压满、字翻纸色 |
-| `src/components/WorkRow.astro` | 作品行；导点连到角色年份，悬停只变朱红 |
+| `src/components/WorkRow.astro` | 作品行；导点 + 网页/仓库两个入口，悬停只变朱红 |
 | `src/layout/Base.astro` | head、跳过链接、外壳 |
 | `src/pages/index.astro` | 刊头 / 入口 / 作品 / 编者的话 / 版权页，以及日期与进度脚本 |
 

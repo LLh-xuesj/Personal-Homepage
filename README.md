@@ -36,7 +36,7 @@ export const site = {
   description: '...', // 只进 <meta description> 与分享卡片，页面上不显示
   lede: '三个链接，别的没什么。',
   entries: [{ id, label, note, href, external }],
-  projects: [{ id, title, summary, year, role, href, external }],
+  projects: [{ id, title, summary, year, role, url, repo }],
   note: { label, lead, paragraphs, signature },
   colophon: { year, items: [{ label, value }] },
 } as const
@@ -50,7 +50,7 @@ export const site = {
 
 ### 作品怎么加
 
-作品的序号接着入口往下排（三个入口之后从 `04` 开始），加一件就多一行，不用改编号。`summary` 是一句话，超过 40 字就该拆成两件事；`href` 留空字符串会渲染成不可点的行（用来记还没上线的）。首页满四件时会自动收掉「待印」版位；超过五件就另开一页，别硬塞。
+作品的序号接着入口往下排（三个入口之后从 `04` 开始），加一件就多一行，不用改编号。`summary` 是一句话，超过 40 字就该拆成两件事；`url` 是网页、`repo` 是代码仓库，两栏都留空的话标题就不可点，只作为一条记录。`role` 写你干的部分，年份按倒序排。首页满四件时会自动收掉「待印」版位；超过五件就另开一页，别硬塞。
 
 ## 日期与今日一字
 

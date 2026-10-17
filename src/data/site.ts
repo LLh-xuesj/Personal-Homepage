@@ -36,10 +36,10 @@ export interface Project {
   year: string;
   /** 你在这件事里的角色 */
   role: string;
-  /** 线上地址；没有就留空字符串，会渲染成不可点的行 */
-  href: string;
-  /** 站外链接，会加 rel="noopener" 并在新标签打开 */
-  external: boolean;
+  /** 线上地址；没有就留空字符串，那一栏入口就不出现 */
+  url: string;
+  /** 代码仓库；没有就留空字符串 */
+  repo: string;
 }
 
 export const site = {
@@ -91,8 +91,8 @@ export const site = {
       summary: '这个站本身。一个静态页面，样式手写，连字体两百来 KB。',
       year: '2026',
       role: '设计 / 前端',
-      href: 'https://xuesj.top',
-      external: true,
+      url: 'https://xuesj.top',
+      repo: 'https://github.com/LLh-xuesj/Personal-Homepage',
     },
   ] satisfies Project[],
 
