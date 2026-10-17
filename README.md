@@ -146,13 +146,19 @@ tools/
 
 ## 部署
 
-静态托管即可。以 Cloudflare Pages 为例：
+仓库：https://github.com/LLh-xuesj/Personal-Homepage
+`main` 每次推送都会触发 Cloudflare Pages 重新构建。
 
-1. 推到 GitHub，建议单独一个仓库（例如 `LLh-xuesj/xuesj-home`），不要放进博客仓库。
-2. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git。
-3. Build command `pnpm build`，Output directory `dist`，环境变量 `NODE_VERSION=22`。
-4. 先访问 `xuesj-home.pages.dev` 确认，再加 Custom domain `xuesj.top`，SSL/TLS 设 Full (strict) 并打开 Always Use HTTPS。
-5. 备用直传：`npx wrangler pages deploy dist --project-name xuesj-home`。
+1. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git，选 `LLh-xuesj/Personal-Homepage`。
+2. 构建设置：Framework preset 选 **Astro**；Build command `pnpm build`；Build output directory `dist`；Root directory 留空。
+3. 环境变量：`NODE_VERSION=22`（Astro 7 要求 ≥ 22.12），`PNPM_VERSION=12.4.1`（lockfile 是 v9 格式，旧版 pnpm 读不了）。
+4. 首次构建完先访问 `personal-homepage.pages.dev` 验收，再绑域名。
+5. Custom domains → 加 `xuesj.top`。zone 在同一个 Cloudflare 账号下，会自动建好记录，不需要手动改 DNS。证书一般几分钟。
+6. SSL/TLS 设 **Full (strict)**，打开 **Always Use HTTPS**。要 `www` 就一起加，再用 Redirect Rules 做 301。
+7. 回滚：Deployments → 那次构建 → Rollback。排查构建失败就看那次的 log，最常见的是 Node/pnpm 版本。
+8. 不用 Git 的备用方案：`npx wrangler pages deploy dist --project-name personal-homepage`。
+
+字体已经提交在 `public/fonts/`，构建只跑 `astro build`，不需要联网，也不需要 Python。
 
 站点地址写在 `astro.config.mjs` 的 `site` 与 `src/data/site.ts` 的 `url`，换域名时两处一起改。
 
