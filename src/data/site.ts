@@ -85,10 +85,10 @@ export const site = {
     {
       id: 'star-atlas',
       title: '识星',
-      summary: '纯本地的认星工具。88 星座、110 个梅西耶、三种测验，双击就能打开。',
+      summary: '纯本地的认星工具。88 星座、110 个梅西耶、三种测验。',
       year: '2026',
       role: '独立开发',
-      url: '',
+      url: 'https://star.xuesj.top',
       repo: 'https://github.com/LLh-xuesj/star-atlas',
     },
     {
