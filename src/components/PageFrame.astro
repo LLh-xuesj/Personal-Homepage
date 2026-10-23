@@ -1,6 +1,6 @@
 ---
 /**
- * 固定的版面框：一圈细墨线、四角套准十字、右侧一条阅读进度。
+ * 固定的版面框：一圈细墨线、四角套准十字、右缘一把阅读刻度尺。
  * 全部是装饰，pointer-events: none，不挡任何链接。
  */
 ---
@@ -11,7 +11,7 @@
   <span class="frame__c frame__c--bl"></span>
   <span class="frame__c frame__c--br"></span>
   <div class="frame__bar">
-    <span class="frame__fill" data-progress></span>
+    <span class="frame__dot" data-progress-dot></span>
   </div>
 </div>
 
@@ -71,21 +71,26 @@
     bottom: -6px;
   }
 
+  /* 刻度尺：每 13px 一格细刻度，红点在上面滑 */
   .frame__bar {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     width: 3px;
-    background: color-mix(in srgb, var(--ink) 7%, transparent);
+    background:
+      repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 13px),
+      color-mix(in srgb, var(--ink) 5%, transparent);
   }
 
-  .frame__fill {
+  .frame__dot {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: -2px;
+    width: 7px;
+    height: 7px;
     background: var(--red);
-    transform: scaleY(0);
-    transform-origin: top center;
+    transform: translateY(0);
     will-change: transform;
   }
 
@@ -96,6 +101,11 @@
 
     .frame__bar {
       width: 2px;
+    }
+
+    .frame__dot {
+      width: 6px;
+      height: 6px;
     }
   }
 </style>

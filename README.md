@@ -7,8 +7,8 @@
 
 ## 它是什么
 
-- **一张纸**。整站只有一页，版式取印刷品：米色纸、墨黑、朱红，1px 墨线分栏，四角有套准十字，右侧一条阅读进度线。不滚动也能看到刊头、今日一字和三个入口。
-- **两个油墨，一个强调色**。颜色只有纸、墨、朱红。没有阴影、没有圆角、没有渐变按钮。
+- **一张纸**。整站只有一页，版式取印刷品：米色纸、墨黑、朱红，1px 墨线分栏，四角有套准十字，右缘一把阅读刻度尺。不滚动也能看到刊头、今日一字和三个入口。
+- **两个油墨，一个强调色**。颜色只有纸、墨、朱红。没有投影、没有圆角、没有渐变按钮；刊头大字和印章带一点套印错位的红影，那是印工，不是阴影。
 - **零运行时依赖**。产物是 Astro 生成的静态 HTML/CSS 和几 KB 自己的 TypeScript，没有 React/Vue/Tailwind/GSAP。
 - **不靠脚本也能读**。刊头、目录、编者的话、版权页都是真 DOM；脚本只负责把日期和「今日一字」换成访客本地的那天，以及推动阅读进度。
 - **深色模式是纸墨对调**，不是另做一套皮肤；打印时是一张真正的纸。
@@ -114,7 +114,7 @@ src/
   scripts/daily.ts        期号、星期、今日一字
   styles/paper.css        令牌与基础样式
   styles/fonts.css        由 pnpm fonts 生成，不要手改
-  components/PageFrame    版面框、四角套准十字、阅读进度槽
+  components/PageFrame    版面框、四角套准十字、阅读刻度尺
   components/GrainOverlay 纸面颗粒（fixed、不接收指针事件）
   components/Seal         朱红印章
   components/IndexRow     整行目录项（悬停墨色压满）
@@ -131,7 +131,7 @@ tools/
 - **目录行**：悬停或键盘聚焦时，墨色从左压满整行，文字翻成纸色，箭头右上移（`IndexRow.astro` 的 `::before` + `transform: scaleX()`）。
 - **作品行**：手势刻意不同——只让标题、序号与描线变朱红，不压满墨色（作品是内容，不是导航）。描线用 `radial-gradient` 平铺成印刷导点，移动端隐藏。
 - **入场**：`[data-rise]` 纯 CSS 上浮，`--i` 控制延迟。
-- **阅读进度**：`requestAnimationFrame` 每帧读一次 `scrollY`，写 `[data-progress]` 的 `scaleY()`，不挂 scroll 监听。
+- **阅读进度**：`requestAnimationFrame` 每帧读一次 `scrollY`，写 `[data-progress-dot]` 红点的 `translateY()`，让它在右缘刻度尺上滑，不挂 scroll 监听。
 - **深色模式**：跟随系统 `prefers-color-scheme`；`prefers-reduced-motion` 下所有动效归零。
 - **打印**：隐藏版面框与颗粒，外链后面补 URL，整页落在一张纸上。
 

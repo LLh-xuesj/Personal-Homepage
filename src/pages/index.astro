@@ -38,7 +38,6 @@ const info = dailyInfo();
           <span data-quote>{info.quote.text}</span>
           <span class="cover__quote-by" data-quote-by>{info.quote.by}</span>
         </p>
-        <p class="label cover__cue">目录在下</p>
       </div>
     </header>
 
@@ -53,6 +52,8 @@ const info = dailyInfo();
       <ol class="index__list">
         {site.entries.map((entry, i) => <IndexRow entry={entry} n={i + 1} />)}
       </ol>
+
+      <p class="folio" aria-hidden="true">02</p>
     </section>
 
     <section class="works" aria-labelledby="works-title">
@@ -81,6 +82,8 @@ const info = dailyInfo();
           )
         }
       </ol>
+
+      <p class="folio" aria-hidden="true">03</p>
     </section>
 
     <hr class="rule rule--red" />
@@ -102,6 +105,8 @@ const info = dailyInfo();
         </p>
       </div>
     </section>
+
+    <p class="folio" aria-hidden="true">04</p>
 
     <footer class="colophon">
       <div class="colophon__grid">
@@ -144,10 +149,11 @@ const info = dailyInfo();
     const time = document.querySelector<HTMLTimeElement>('time[data-date]');
     if (time) time.dateTime = info.date;
 
-    // 阅读进度：每帧读一次滚动位置，写 scaleY。没有 scroll 监听。
-    const fill = document.querySelector<HTMLElement>('[data-progress]');
+    // 阅读进度：每帧读一次滚动位置，写 translateY。没有 scroll 监听。
+    const bar = document.querySelector<HTMLElement>('.frame__bar');
+    const dot = document.querySelector<HTMLElement>('[data-progress-dot]');
 
-    if (fill) {
+    if (bar && dot) {
       let target = 0;
       let value = 0;
 
@@ -156,17 +162,22 @@ const info = dailyInfo();
         target = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       };
 
+      const apply = () => {
+        const range = Math.max(0, bar.clientHeight - dot.offsetHeight);
+        dot.style.transform = `translateY(${(value * range).toFixed(1)}px)`;
+      };
+
       const tick = () => {
         read();
         value += (target - value) * 0.14;
         if (Math.abs(target - value) < 0.0015) value = target;
-        fill.style.transform = `scaleY(${value.toFixed(4)})`;
+        apply();
         requestAnimationFrame(tick);
       };
 
       read();
       value = target;
-      fill.style.transform = `scaleY(${value.toFixed(4)})`;
+      apply();
       requestAnimationFrame(tick);
       window.addEventListener('resize', read, { passive: true });
     }
@@ -206,6 +217,8 @@ const info = dailyInfo();
     line-height: 0.76;
     letter-spacing: -0.055em;
     margin-left: -0.055em;
+    /* 套印错位：红版比墨版偏右下一点，平色、无模糊 */
+    text-shadow: 0.024em 0.014em 0 color-mix(in srgb, var(--red) 34%, transparent);
   }
 
   .wordmark__dot {
@@ -213,10 +226,6 @@ const info = dailyInfo();
   }
 
   .cover__foot {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 2rem;
     padding-top: 1rem;
     border-top: 1px solid var(--rule);
   }
@@ -237,21 +246,19 @@ const info = dailyInfo();
     white-space: nowrap;
   }
 
-  .cover__cue {
-    color: var(--ink-faint);
-    white-space: nowrap;
-  }
-
   .index {
     margin-top: clamp(2.6rem, 6vw, 4.5rem);
   }
 
+  /* 题下双规：标题自带下线是第一条，列表首行的上边线是第二条 */
   .section-head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
     padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 4px;
   }
 
   .section-head__latin {
@@ -270,6 +277,28 @@ const info = dailyInfo();
 
   .works__list > :last-child {
     border-bottom: 1px solid var(--rule);
+  }
+
+  /* 组末的页码：印刷品的 folio，纯装饰 */
+  .folio {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin: clamp(1.4rem, 3vw, 2.2rem) 0 1.2rem;
+    font-family: var(--font-serif);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .folio::before,
+  .folio::after {
+    content: '';
+    width: 26px;
+    height: 1px;
+    background: var(--rule);
   }
 
   /* 还没印的版位：底下是浅斜线，像留出的一格 */
@@ -459,12 +488,6 @@ const info = dailyInfo();
 
     .cover__issue {
       text-align: left;
-    }
-
-    .cover__foot {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.6rem;
     }
 
     .note {

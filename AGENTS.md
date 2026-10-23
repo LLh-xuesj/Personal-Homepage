@@ -10,10 +10,10 @@
 ## 硬约束
 
 - **零运行时依赖。** 不要加 React/Vue/Svelte/Tailwind/GSAP/three.js 或任何会在浏览器里跑的包。devDependencies 只服务 `tools/` 下的构建期脚本。
-- **不许 `window.addEventListener('scroll')`**；只动画 `transform` 与 `opacity`。阅读进度用 rAF 读 `scrollY` 写 `scaleY()`。
+- **不许 `window.addEventListener('scroll')`**；只动画 `transform` 与 `opacity`。阅读进度用 rAF 读 `scrollY` 写刻度尺红点的 `translateY()`。
 - **不动博客**（另一个仓库 `LLh-xuesj/astro_blog`）。这里不做文章列表、归档、评论、RSS、统计。
 - 颜色只从 `src/styles/paper.css` 的令牌取。只有纸、墨、朱红；一个强调色（朱红 `#c33f28` / 深色 `#e2653f`）。组件里不要写死新色值。
-- 不用圆角、阴影、通用 1px 灰边框；分隔线是 `.rule`（`--rule`），朱红只做强调，不做大块底色（印章除外）。
+- 不用圆角、阴影、通用 1px 灰边框；分隔线是 `.rule`（`--rule`），朱红只做强调，不做大块底色（印章除外）。刊头大字与印章的套印错位红影是印刷效果（平色、零模糊），不算阴影，别推广到别的元素。
 - 可见文案里不要出现 `—` 与 `–`。
 - 中文与西文走自托管 `@font-face`，不要改成 Google Fonts 外链。**改了页面上的汉字要重跑 `pnpm fonts`**。
 - 改了 `src/data/site.ts` 的结构要同步 `Entry`、`ColophonItem` 等类型。
@@ -27,7 +27,7 @@
 | `src/styles/fonts.css` | `pnpm fonts` 生成，不要手改 |
 | `src/scripts/daily.ts` | 期号、星期、今日一字（44 字）、今日一言（按字的主题取 `QUOTES`），`seed = y*372+m*31+d` |
 | `src/data/site.ts` | 站名、导语、入口、作品、编者的话、版权页 |
-| `src/components/PageFrame.astro` | 版面框（fixed inset 11px）、四角套准十字、右侧进度槽 |
+| `src/components/PageFrame.astro` | 版面框（fixed inset 11px）、四角套准十字、右缘阅读刻度尺 |
 | `src/components/GrainOverlay.astro` | 纸面颗粒，fixed、`pointer-events: none` |
 | `src/components/Seal.astro` | 今日一字印章 |
 | `src/components/IndexRow.astro` | 整行目录项；悬停墨色压满、字翻纸色 |
@@ -79,7 +79,7 @@
 4. **没有 hover API**。`:hover` 效果读计算样式验证：`:focus-visible` 可以真键盘触发（见下），`::before` 的 `transform` 能在聚焦后读到接近 `matrix(1,...)`。
 5. **键盘**：先点一下页面给焦点，再 `browser.executeCommand({ method: 'press', tabId, key: 'Tab' })` 逐步 Tab；`locator.press` 会因"Active element is no longer the expected input target"报错。顺序应为：跳到正文 → 01 → 02 → 03 → 回到顶部。
 6. **`playwright.evaluate` 只吃单个表达式**，多语句用 `(() => { ... })()` 包；里面不能用 `import()`；变量名用 ASCII。
-7. **rAF 可能被挂起**（IAB 窗格被遮挡时 Chromium 停发 rAF）：阅读进度线停在 0、CSS 入场动画不跑，与代码 bug 同症状。先量 rAF 计数再下结论；必要时把 `requestAnimationFrame` 换成 MessageChannel 队列，并发一次 `tab.screenshot({})` 逼出 begin frame。
+7. **rAF 可能被挂起**（IAB 窗格被遮挡时 Chromium 停发 rAF）：进度红点停在顶、CSS 入场动画不跑，与代码 bug 同症状。先量 rAF 计数再下结论；必要时把 `requestAnimationFrame` 换成 MessageChannel 队列，并发一次 `tab.screenshot({})` 逼出 begin frame。
 8. **dev 报 `[PARSE_ERROR]` 先看 `.astro/dev-run.log`**：重复 import 同一类型（例如两次 `type DayMood`）会让整页模块加载失败，而 `pnpm build` 可能仍然通过（构建管线会擦掉 type import）。`npx astro check` 会卡在安装 `@astrojs/check` 的交互提示，不要当类型检查用。
 9. 改完必须 `pnpm build`；产物应只有 `dist/index.html`、`favicon.svg`、`apple-touch-icon.png` 与四个字体文件。
 

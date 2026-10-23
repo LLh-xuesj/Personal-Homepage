@@ -33,6 +33,7 @@ const info = dailyInfo();
   }
 
   .seal__mark {
+    position: relative;
     display: grid;
     place-items: center;
     width: clamp(72px, 8.4vw, 104px);
@@ -45,6 +46,25 @@ const info = dailyInfo();
     box-shadow: inset 0 0 0 4px color-mix(in srgb, var(--paper) 30%, transparent);
     transform: rotate(-1.6deg);
     transition: transform 420ms var(--ease);
+    /* 裁掉网点伪元素转出方块的部分，否则会把窄屏撑出横向滚动 */
+    overflow: hidden;
+    /* 二次落印：红版在纸面上又压了一个偏移的平色影子 */
+    filter: drop-shadow(3px 2px 0 color-mix(in srgb, var(--red) 40%, transparent));
+  }
+
+  /* 45° 网点：网屏纹理压在红底上、字下面（z-index -1 落在本元素背景之上） */
+  .seal__mark::before {
+    content: '';
+    position: absolute;
+    inset: -28%;
+    z-index: -1;
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--paper) 24%, transparent) 0.75px,
+      transparent 1.05px
+    );
+    background-size: 5px 5px;
+    transform: rotate(45deg);
   }
 
   .seal:hover .seal__mark {
