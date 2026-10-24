@@ -110,6 +110,15 @@ export const site = {
       repo: 'https://github.com/LLh-xuesj/typora-theme-xuan',
     },
     {
+      id: 'roux-cube',
+      title: '桥式',
+      summary: '从零到 sub-20 的桥式魔方教程，CMLL 全 42 式，公式配可拖动的 3D 演示。',
+      year: '2026',
+      role: '独立开发',
+      url: 'https://roux.xuesj.top',
+      repo: 'https://github.com/LLh-xuesj/roux-cube-guide',
+    },
+    {
       id: 'this-page',
       title: '这一页',
       summary: '这个站本身。一个静态页面，样式手写，连字体两百来 KB。',
